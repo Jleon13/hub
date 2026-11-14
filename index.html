@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0F766E">
+<title>Hub</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F766E'/%3E%3Cpath d='M9 22V10h3.2l3.8 7 3.8-7H23v12h-2.8v-7.4L16.9 21h-1.8l-3.3-6.4V22z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aleo:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-900:#134E4A; --teal-800:#115E59; --teal-700:#0F766E; --teal-600:#0D9488; --teal-500:#14B8A6;
+  --teal-300:#5EEAD4; --teal-200:#99F6E4; --teal-100:#CCFBF1; --teal-50:#F0FDFA;
+  --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --faint:#94A3B8; --line:#E2E8F0; --line-2:#EEF2F6;
+  --bg:#FFFFFF; --surface:#F8FAFB; --warn:#B45309; --warn-bg:#FEF3C7; --crit:#B91C1C; --crit-bg:#FEE2E2;
+  --ok:#047857; --ok-bg:#D1FAE5;
+  --radius:14px; --shadow:0 1px 2px rgba(15,23,42,.05),0 4px 16px rgba(15,23,42,.06);
+  --shadow-h:0 2px 4px rgba(15,23,42,.06),0 12px 28px rgba(15,118,110,.14);
+  --side:248px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Aleo",Georgia,serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--teal-700);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+h1,h2,h3,h4{line-height:1.2;margin:0;color:var(--ink);font-weight:600}
+h1{font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.01em}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- login ---------- */
+#login{min-height:100vh;display:none;place-items:center;padding:24px;
+  background:radial-gradient(1200px 600px at 10% -10%,var(--teal-100),transparent 60%),radial-gradient(900px 500px at 110% 110%,var(--teal-50),transparent 60%),#fff}
+.lcard{width:min(400px,100%);background:#fff;border:1px solid var(--line);border-radius:20px;padding:36px 30px;box-shadow:var(--shadow)}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--teal-700);display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.25rem}
+.lcard h1{font-size:1.6rem;margin:18px 0 6px}
+.field{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;outline:none;transition:.15s}
+.field:focus{border-color:var(--teal-600);box-shadow:0 0 0 4px var(--teal-100)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink-2);padding:8px 14px;border-radius:10px;font-size:.92rem;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--teal-500);color:var(--teal-700);text-decoration:none}
+.btn.primary{background:var(--teal-700);border-color:var(--teal-700);color:#fff}
+.btn.primary:hover{background:var(--teal-800);color:#fff}
+.btn.block{width:100%;justify-content:center;padding:13px;font-size:1rem;border-radius:12px}
+.btn svg.i{width:17px;height:17px}
+.check{display:flex;gap:8px;align-items:center;margin:14px 0 18px;color:var(--ink-2);font-size:.92rem}
+.check input{accent-color:var(--teal-700);width:17px;height:17px}
+.err{color:var(--crit);font-size:.9rem;min-height:1.3em;margin-top:10px}
+
+/* ---------- shell ---------- */
+#app{display:none}
+.side{position:fixed;inset:0 auto 0 0;width:var(--side);border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;padding:20px 14px;z-index:20}
+.brand{display:flex;gap:12px;align-items:center;padding:4px 8px 22px}
+.brand .logo{width:38px;height:38px;border-radius:11px;font-size:1rem}
+.brand b{display:block;font-size:1.02rem}
+.brand span{font-size:.78rem;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;color:var(--ink-2);font-size:.97rem}
+.nav a:hover{background:var(--surface);text-decoration:none}
+.nav a.on{background:var(--teal-50);color:var(--teal-800);font-weight:600}
+.nav a.on svg{color:var(--teal-700)}
+.nav .count{margin-left:auto;font-size:.75rem;background:var(--teal-100);color:var(--teal-800);border-radius:99px;padding:1px 8px}
+.side .foot{margin-top:auto;padding:12px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
+.side .foot button{margin-top:8px}
+main{margin-left:var(--side);min-height:100vh}
+.top{position:sticky;top:0;z-index:15;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:12px 32px;display:flex;align-items:center;gap:14px}
+.top .mtitle{display:none;font-weight:600}
+.search{position:relative;flex:1;max-width:560px}
+.search input{width:100%;padding:10px 14px 10px 40px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:.95rem;background:var(--surface);outline:none}
+.search input:focus{background:#fff;border-color:var(--teal-600);box-shadow:0 0 0 4px var(--teal-100)}
+.search > svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--faint)}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:inherit;font-size:.72rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;background:#fff}
+.results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-h);max-height:70vh;overflow:auto;display:none;padding:6px}
+.results a{display:block;padding:10px 12px;border-radius:10px;color:var(--ink)}
+.results a:hover,.results a.sel{background:var(--teal-50);text-decoration:none}
+.results .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--teal-700)}
+.results .s{font-size:.84rem;color:var(--muted);display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.results mark{background:var(--teal-100);color:inherit;border-radius:3px;padding:0 1px}
+.page{padding:28px 32px 80px;max-width:1280px}
+.crumb{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
+.tabbar{display:none}
+
+/* ---------- cards ---------- */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.auto{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.sec{margin:30px 0 14px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sec h2{display:flex;gap:10px;align-items:center}
+
+.hero{position:relative;overflow:hidden;border-radius:20px;padding:28px 30px;color:#fff;
+  background:linear-gradient(135deg,var(--teal-800) 0%,var(--teal-700) 45%,var(--teal-600) 100%);box-shadow:var(--shadow-h)}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero:before{content:"";position:absolute;right:60px;bottom:-90px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero .lbl{font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;opacity:.85}
+.hero h1{color:#fff;margin:6px 0 4px;font-size:clamp(1.5rem,3vw,2.1rem)}
+.hero .big{font-size:clamp(2.6rem,6vw,3.6rem);font-weight:700;line-height:1}
+.hero .row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;position:relative;z-index:1}
+.hero a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.hero .bar{height:8px;background:rgba(255,255,255,.2);border-radius:99px;margin-top:18px;overflow:hidden;position:relative;z-index:1}
+.hero .bar i{display:block;height:100%;background:#fff;border-radius:99px}
+
+.kpi{padding:18px 20px}
+.kpi .v{font-size:2rem;font-weight:700;color:var(--teal-800);line-height:1.1}
+.kpi .l{font-size:.86rem;color:var(--muted)}
+.kpi .t{font-size:.8rem;color:var(--ink-2);margin-top:6px}
+
+.todo{display:flex;flex-direction:column}
+.todo a{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid var(--line-2);color:var(--ink)}
+.todo a:last-child{border-bottom:0}
+.todo a:hover{text-decoration:none;background:var(--surface)}
+.todo .dot{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:none;background:var(--teal-50);color:var(--teal-700)}
+.todo .dot svg{width:16px;height:16px}
+.todo .w{font-size:.82rem;color:var(--muted)}
+
+.dl{display:flex;flex-direction:column;gap:10px}
+.dl a{display:grid;grid-template-columns:62px 1fr auto;gap:12px;align-items:center;color:var(--ink);padding:6px 4px;border-radius:10px}
+.dl a:hover{background:var(--surface);text-decoration:none}
+.datebox{border:1px solid var(--line);border-radius:10px;text-align:center;padding:4px 0;background:#fff}
+.datebox b{display:block;font-size:1.2rem;line-height:1.1;color:var(--teal-800)}
+.datebox span{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink-2);background:#fff;white-space:nowrap}
+.pill.t{background:var(--teal-50);border-color:var(--teal-200);color:var(--teal-800)}
+.pill.solid{background:var(--teal-700);border-color:var(--teal-700);color:#fff}
+.pill.warn{background:var(--warn-bg);border-color:#FCD34D;color:var(--warn)}
+.pill.crit{background:var(--crit-bg);border-color:#FCA5A5;color:var(--crit)}
+.pill.ok{background:var(--ok-bg);border-color:#6EE7B7;color:var(--ok)}
+.pill.ghost{color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.sd{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* professor cards */
+.pc{display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:.18s;color:var(--ink)}
+.pc:hover{box-shadow:var(--shadow-h);border-color:var(--teal-200);transform:translateY(-2px);text-decoration:none}
+.pc .tp{display:flex;gap:12px;align-items:center}
+.av{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:700;color:var(--teal-800);background:linear-gradient(135deg,var(--teal-100),var(--teal-50));border:1px solid var(--teal-200);flex:none}
+.av.lg{width:64px;height:64px;font-size:1.35rem;border-radius:18px}
+.pc .nm{font-weight:600;line-height:1.25}
+.pc .in{font-size:.84rem;color:var(--muted);line-height:1.35}
+.pc .why{font-size:.88rem;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pc .ft{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line-2);font-size:.84rem}
+.meter{height:6px;background:var(--line-2);border-radius:99px;overflow:hidden;width:70px;display:inline-block;vertical-align:middle;margin-left:6px}
+.meter i{display:block;height:100%;background:var(--teal-600);border-radius:99px}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:18px}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:99px;padding:6px 13px;font-size:.86rem}
+.chip:hover{border-color:var(--teal-500)}
+.chip.on{background:var(--teal-700);border-color:var(--teal-700);color:#fff}
+.sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+select.chip{padding-right:28px}
+
+/* detail */
+.ph{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.ph .meta{flex:1;min-width:240px}
+.ph h1{margin:2px 0 6px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:24px 0 20px;overflow-x:auto;scrollbar-width:none}
+.tabs a{padding:10px 14px;color:var(--muted);border-bottom:2.5px solid transparent;white-space:nowrap;font-size:.95rem}
+.tabs a:hover{color:var(--ink);text-decoration:none}
+.tabs a.on{color:var(--teal-800);border-color:var(--teal-700);font-weight:600}
+.callout{border-left:4px solid var(--teal-600);background:var(--teal-50);padding:16px 18px;border-radius:0 12px 12px 0;color:var(--ink-2)}
+.facts{width:100%;border-collapse:collapse;font-size:.93rem}
+.facts th{width:150px;text-align:left;vertical-align:top;color:var(--muted);font-weight:500;padding:10px 12px 10px 0;border-bottom:1px solid var(--line-2)}
+.facts td{padding:10px 0;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+.facts tr:last-child th,.facts tr:last-child td{border-bottom:0}
+.cl{list-style:none;margin:0;padding:0}
+.cl li{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:.93rem;color:var(--ink-2)}
+.cl li:last-child{border-bottom:0}
+.cl .bx{width:20px;height:20px;border-radius:6px;border:1.8px solid var(--faint);flex:none;margin-top:1px;display:grid;place-items:center}
+.cl li.done{color:var(--muted)}
+.cl li.done .bx{background:var(--teal-700);border-color:var(--teal-700);color:#fff}
+.cl li.done .bx svg{width:13px;height:13px;stroke-width:3}
+
+.mail{padding:0;overflow:hidden}
+.mail .mh{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--surface)}
+.mail .mh .r{display:flex;gap:8px;font-size:.88rem;color:var(--ink-2);margin:2px 0}
+.mail .mh .r b{color:var(--muted);font-weight:500;width:62px;flex:none}
+.mail .note{margin:12px 20px 0;padding:10px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:.86rem}
+.mail .body{padding:18px 20px;white-space:pre-wrap;font-size:.95rem;color:var(--ink)}
+.mail .acts{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 18px}
+
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.doc{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;cursor:pointer;transition:.18s;display:flex;flex-direction:column;color:var(--ink)}
+.doc:hover{box-shadow:var(--shadow-h);border-color:var(--teal-200);transform:translateY(-2px);text-decoration:none}
+.doc .th{aspect-ratio:1/1.29;background:var(--surface);border-bottom:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.doc .th img{width:100%;height:100%;object-fit:cover;object-position:top;opacity:0;transition:opacity .3s}
+.doc .th img.ld{opacity:1}
+.doc .cp{padding:10px 12px;font-size:.84rem;line-height:1.3}
+.doc .cp small{display:block;color:var(--muted);margin-top:3px}
+.doc.txt .th{aspect-ratio:auto;height:96px;color:var(--teal-700)}
+
+.venn{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:0;align-items:stretch}
+.venn .c{border-radius:18px;padding:18px}
+.venn .mine{background:#F1F5F9}
+.venn .both{background:var(--teal-700);color:#fff;margin:0 -10px;z-index:1;box-shadow:var(--shadow-h)}
+.venn .theirs{background:var(--teal-50)}
+.venn h3{font-size:.95rem;margin-bottom:10px}
+.venn .both h3{color:#fff}
+.venn .both .pill{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+
+.md{max-width:820px;color:var(--ink-2)}
+.md h1{font-size:1.7rem;margin:0 0 16px;color:var(--ink)}
+.md h2{font-size:1.25rem;margin:30px 0 12px;padding-top:6px;color:var(--ink)}
+.md h3{font-size:1.06rem;margin:22px 0 8px;color:var(--ink)}
+.md p,.md li{font-size:.97rem}
+.md table{border-collapse:collapse;width:100%;font-size:.88rem;margin:14px 0;display:block;overflow-x:auto}
+.md th,.md td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+.md th{background:var(--teal-50);color:var(--teal-900)}
+.md code{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:.84em}
+.md pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}
+.md pre code{border:0;padding:0}
+.md blockquote{margin:14px 0;border-left:4px solid var(--teal-500);background:var(--teal-50);padding:10px 16px;border-radius:0 10px 10px 0}
+.md input[type=checkbox]{accent-color:var(--teal-700)}
+.md a{word-break:break-word}
+pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--ink-2);margin:0}
+
+.doclayout{display:grid;grid-template-columns:270px 1fr;gap:28px;align-items:start}
+.doclist{position:sticky;top:84px;max-height:calc(100vh - 110px);overflow:auto}
+.doclist h4{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 10px 6px;font-weight:600}
+.doclist a{display:block;padding:7px 10px;border-radius:9px;color:var(--ink-2);font-size:.92rem}
+.doclist a:hover{background:var(--surface);text-decoration:none}
+.doclist a.on{background:var(--teal-50);color:var(--teal-800);font-weight:600}
+
+/* timeline */
+.tl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);-webkit-overflow-scrolling:touch}
+.tl svg text{font-family:"Aleo",Georgia,serif}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.84rem;color:var(--ink-2);margin:12px 2px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.month h3{margin:26px 0 10px;color:var(--teal-800)}
+
+/* cv */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:3px;background:var(--surface);flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:9px;color:var(--ink-2);font-size:.9rem}
+.seg button.on{background:#fff;color:var(--teal-800);font-weight:600;box-shadow:0 1px 3px rgba(15,23,42,.12)}
+.cvwrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.cvprev{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.cvprev img{width:100%;display:block}
+
+/* map */
+#map{height:calc(100vh - 210px);min-height:420px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);z-index:1}
+.maplist a{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:9px;color:var(--ink-2);font-size:.9rem}
+.maplist a:hover{background:var(--surface);text-decoration:none}
+.leaflet-popup-content{font-family:"Aleo",Georgia,serif;font-size:.9rem;margin:12px 14px}
+.leaflet-popup-content a{display:block;padding:3px 0}
+.leaflet-tile-pane{filter:grayscale(1) contrast(.72) brightness(1.18)}
+.leaflet-container{background:#F8FAFB;font-family:"Aleo",Georgia,serif}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:18px;width:min(1100px,100%);height:min(92vh,1000px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(15,23,42,.35)}
+.mbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.mbar b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mbody{flex:1;overflow:auto;background:var(--surface)}
+.mbody iframe{width:100%;height:100%;border:0;background:#fff}
+.mbody .pad{padding:24px}
+.spin{width:28px;height:28px;border:3px solid var(--teal-100);border-top-color:var(--teal-700);border-radius:50%;animation:sp 0.8s linear infinite;margin:40px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-size:.9rem;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.cvwrap{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .side{display:none}
+  main{margin-left:0}
+  .top{padding:10px 16px}
+  .top .mtitle{display:flex;align-items:center;gap:8px}
+  .top .mtitle .logo{width:30px;height:30px;border-radius:9px;font-size:.85rem}
+  .search kbd{display:none}
+  .page{padding:20px 16px 110px}
+  .g2,.g3{grid-template-columns:1fr}
+  .doclayout{grid-template-columns:1fr}
+  .doclist{position:static;max-height:none}
+  .venn{grid-template-columns:1fr}
+  .venn .both{margin:-8px 0}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.68rem;color:var(--muted);padding:4px 0}
+  .tabbar a.on{color:var(--teal-700);font-weight:600}
+  .tabbar a:hover{text-decoration:none}
+  .facts th{width:110px}
+  .mbox{height:94vh}
+  #map{height:62vh}
+  .hero{padding:22px 20px}
+}
+@media (max-width:520px){.g4{grid-template-columns:1fr 1fr}.kpi .v{font-size:1.6rem}.dl a{grid-template-columns:54px 1fr auto}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login">
+  <form class="lcard" id="lform" autocomplete="on">
+    <div class="logo"><svg class="i" style="width:24px;height:24px"><use href="#i-out"/></svg></div>
+    <h1>Welcome back</h1>
+    <p class="muted" style="margin:0 0 22px">This space is private. Enter your password to continue.</p>
+    <input type="text" name="username" value="me" autocomplete="username" hidden>
+    <input class="field" id="pw" type="password" placeholder="Password" autocomplete="current-password" required>
+    <label class="check"><input type="checkbox" id="remember" checked> Remember this device</label>
+    <button class="btn primary block" id="go" type="submit">Unlock</button>
+    <div class="err" id="err"></div>
+  </form>
+</section>
+
+<!-- APP -->
+<div id="app">
+  <aside class="side">
+    <div class="brand"><div class="logo" id="blogo"></div><div><b id="bname"></b><span id="bsub"></span></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot"><div id="updated"></div><button class="btn" id="logout"><svg class="i"><use href="#i-out"/></svg>Lock</button></div>
+  </aside>
+  <main>
+    <div class="top">
+      <div class="mtitle"><div class="logo" id="mlogo"></div></div>
+      <div class="search">
+        <svg class="i"><use href="#i-search"/></svg>
+        <input id="q" placeholder="Search everything…" autocomplete="off">
+        <kbd>Ctrl K</kbd>
+        <div class="results" id="results"></div>
+      </div>
+    </div>
+    <div class="page" id="view"></div>
+  </main>
+  <nav class="tabbar" id="tabbar"></nav>
+</div>
+
+<div class="modal" id="modal"><div class="mbox"><div class="mbar"><b id="mtitle"></b><span id="macts" style="display:flex;gap:8px"></span><button class="btn" id="mclose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div><div class="mbody" id="mbody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.5 3.5 5.2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6.2v13.6L9 17.6l6 2.2 6-2.2V4l-6 2.2z"/><path d="M9 4v13.6M15 6.2v13.6"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></symbol>
+  <symbol id="i-cv" viewBox="0 0 24 24"><path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5"/><circle cx="11" cy="11" r="2"/><path d="M8 17c.5-1.8 1.6-2.7 3-2.7s2.5.9 3 2.7"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5h6a2.5 2.5 0 0 1 2 1v14a2.5 2.5 0 0 0-2-1H4z"/><path d="M20 4.5h-6a2.5 2.5 0 0 0-2 1v14a2.5 2.5 0 0 1 2-1h6z"/></symbol>
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M12 3 2.5 8 12 13l9.5-5z"/><path d="M6 10.2V16c2 1.8 4 2.5 6 2.5s4-.7 6-2.5v-5.8"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10.5" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V5.5a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V7.5A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M4.5 20h15"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5L3 9.5z"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5M9 12h7M9 15.5h7"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></symbol>
+</svg>
+
+<script>
+"use strict";
+const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/9e567abb4521e7e74336.bin","v":1};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ic = (n, cls = "i") => `<svg class="${cls}"><use href="#i-${n}"/></svg>`;
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64e = u => btoa(String.fromCharCode(...new Uint8Array(u)));
+let KEY = null, D = null;
+
+/* ================= crypto ================= */
+async function derive(pw) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({name: "PBKDF2", salt: b64d(CONF.salt), iterations: CONF.iter, hash: "SHA-256"},
+    base, {name: "AES-GCM", length: 256}, true, ["decrypt"]);
+}
+async function unseal(buf) {
+  const u = new Uint8Array(buf);
+  return crypto.subtle.decrypt({name: "AES-GCM", iv: u.slice(0, 12)}, KEY, u.slice(12));
+}
+async function loadData() {
+  const r = await fetch(CONF.data, {cache: "no-cache"});
+  if (!r.ok) throw new Error("fetch");
+  const plain = await unseal(await r.arrayBuffer());
+  const text = await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+  return JSON.parse(text);
+}
+const URLS = new Map();
+async function fileURL(sha) {
+  if (URLS.has(sha)) return URLS.get(sha);
+  const p = (async () => {
+    const m = D.filemap[sha];
+    const r = await fetch(`f/${m.id}.bin`);
+    const plain = await unseal(await r.arrayBuffer());
+    return URL.createObjectURL(new Blob([plain], {type: m.mime}));
+  })();
+  URLS.set(sha, p);
+  return p;
+}
+
+/* ================= login ================= */
+async function start() {
+  const saved = (() => { try { return JSON.parse(localStorage.getItem("hub.k") || "null"); } catch { return null; } })();
+  if (saved && saved.salt === CONF.salt) {
+    try {
+      KEY = await crypto.subtle.importKey("raw", b64d(saved.k), "AES-GCM", true, ["decrypt"]);
+      D = await loadData();
+      return boot();
+    } catch { try { localStorage.removeItem("hub.k"); } catch {} }
+  }
+  $("#login").style.display = "grid";
+  $("#pw").focus();
+}
+$("#lform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("#go"); btn.disabled = true; btn.textContent = "Unlocking…"; $("#err").textContent = "";
+  try {
+    KEY = await derive($("#pw").value);
+    D = await loadData();
+    if ($("#remember").checked) {
+      try { localStorage.setItem("hub.k", JSON.stringify({salt: CONF.salt, k: b64e(await crypto.subtle.exportKey("raw", KEY))})); } catch {}
+    }
+    boot();
+  } catch (err) {
+    $("#err").textContent = "That password didn't work. Try again.";
+    btn.disabled = false; btn.textContent = "Unlock";
+  }
+});
+$("#logout").addEventListener("click", lock);
+function lock() { try { localStorage.removeItem("hub.k"); } catch {} location.hash = ""; location.reload(); }
+
+/* ================= helpers ================= */
+const TODAY = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+const parseD = s => { if (!s) return null; const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d || 1); };
+const daysTo = s => { const d = parseD(s); return d ? Math.round((d - TODAY) / 864e5) : null; };
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const MONL = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const fmtD = s => { const d = parseD(s); return d ? `${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}` : ""; };
+const initials = p => { const w = p.name.replace(/\(.*?\)/g, "").replace(/^(Prof\.|Dr\.)\s*/, "").replace(/\b(van|de|da|del)\b/gi, "").trim().split(/\s+/).filter(x => /^[A-Z]/.test(x) && !x.endsWith(".")); return ((w[0] || "")[0] + ((w.length > 1 ? w[w.length - 1] : "")[0] || "")) || p.last.slice(0, 2); };
+const STATUS = {
+  "sent": {label: "Emailed · waiting", icon: "send"},
+  "not-sent": {label: "To contact", icon: "mail"},
+  "advice": {label: "Advice contact", icon: "chat"},
+  "program": {label: "Apply via program", icon: "flag"},
+};
+const PRI = {"A++": 0, "A+": 1, "A": 2, "B": 3, "C": 4};
+const TRACK = {rt: "Radiative transfer", ghg: "GHG & methane", bio: "Biomedical", ci: "Computational imaging", eco: "CV for environment"};
+const shortInst = p => p.institution.split(/[,(:]/)[0].trim();
+function dueChip(n) {
+  if (n == null) return "";
+  if (n < 0) return `<span class="pill ghost">${ic("clock")}passed</span>`;
+  const cls = n <= 14 ? "crit" : n <= 30 ? "warn" : "t";
+  return `<span class="pill ${cls}">${ic("clock")}${n === 0 ? "today" : n === 1 ? "1 day" : n + " days"}</span>`;
+}
+const statusPill = p => `<span class="pill">${ic(STATUS[p.status]?.icon || "flag")}${esc(STATUS[p.status]?.label || p.status)}</span>`;
+const priPill = p => `<span class="pill ${p.priority.startsWith("A") ? "solid" : "t"}">${p.priority.includes("+") ? ic("star") : ""}Priority ${esc(p.priority)}</span>`;
+function toast(t) { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove("on"), 1800); }
+async function copy(t) { try { await navigator.clipboard.writeText(t); toast("Copied"); } catch { toast("Copy failed"); } }
+const md = t => window.marked ? marked.parse(t, {gfm: true, breaks: false}) : `<pre class="txt">${esc(t)}</pre>`;
+function sentDays(p) { const s = p.first_sent || p.sent_date; return s ? -daysTo(s) : null; }
+function parseEmail(text) {
+  const lines = text.split("\n"); const notes = [], head = {}; let i = 0;
+  for (; i < lines.length; i++) {
+    const l = lines[i];
+    if (l.startsWith("#")) { notes.push(l.replace(/^#\s?/, "")); continue; }
+    const m = l.match(/^(To|Subject|Attach|Cc|CC):\s*(.*)$/);
+    if (m) { head[m[1].toLowerCase()] = m[2]; continue; }
+    if (l.trim() === "" && Object.keys(head).length) { i++; break; }
+    if (l.trim() !== "") break;
+  }
+  return {notes: notes.join(" "), head, body: lines.slice(i).join("\n").trim()};
+}
+function lazyThumbs(root = document) {
+  const io = new IntersectionObserver(es => es.forEach(async e => {
+    if (!e.isIntersecting) return; io.unobserve(e.target);
+    try { e.target.onload = () => { e.target.classList.add("ld"); e.target.style.opacity = 1; }; e.target.src = await fileURL(e.target.dataset.sha); } catch {}
+  }), {rootMargin: "200px"});
+  $$("img[data-sha]", root).forEach(i => io.observe(i));
+}
+
+/* ================= navigation ================= */
+const NAV = [
+  {r: "", t: "Home", i: "home"},
+  {r: "professors", t: "Professors", i: "users", c: () => D.professors.length},
+  {r: "calendar", t: "Calendar", i: "cal"},
+  {r: "map", t: "Map", i: "map"},
+  {r: "cv", t: "CV", i: "cv"},
+  {r: "docs", t: "Documents", i: "book"},
+  {r: "papers", t: "My papers", i: "paper"},
+  {r: "english", t: "English", i: "chat"},
+];
+const TABS = ["", "professors", "calendar", "map", "docs"];
+function drawNav(cur) {
+  const top = cur.split("/")[0];
+  const act = r => (r === top || (r === "professors" && top === "prof") || (r === "docs" && top === "doc" && !isEnglishDoc(cur)) || (r === "english" && isEnglishDoc(cur))) ? "on" : "";
+  $("#nav").innerHTML = NAV.map(n => `<a href="#/${n.r}" class="${act(n.r)}">${ic(n.i)}${n.t}${n.c ? `<span class="count">${n.c()}</span>` : ""}</a>`).join("");
+  $("#tabbar").innerHTML = TABS.map(r => { const n = NAV.find(x => x.r === r); return `<a href="#/${r}" class="${act(r)}">${ic(n.i)}${n.t === "Documents" ? "Docs" : n.t}</a>`; }).join("")
+    + `<a href="#/more" class="${["cv","papers","english","more"].includes(top) ? "on" : ""}">${ic("more")}More</a>`;
+}
+const isEnglishDoc = r => r.startsWith("doc/") && (D.docs.find(d => d.slug === r.slice(4))?.section || "").startsWith("English");
+
+function route() {
+  const r = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+  drawNav(r);
+  const [a, b, c] = r.split("/");
+  const v = $("#view");
+  closeResults();
+  try {
+    if (!a) v.innerHTML = home();
+    else if (a === "professors") v.innerHTML = professors();
+    else if (a === "prof") v.innerHTML = prof(+b, c || "overview");
+    else if (a === "calendar") v.innerHTML = calendar();
+    else if (a === "map") { v.innerHTML = mapPage(); drawMap(); }
+    else if (a === "cv") v.innerHTML = cvPage(b);
+    else if (a === "docs") { location.replace("#/doc/" + D.docs[0].slug); return; }
+    else if (a === "doc") v.innerHTML = docPage(b);
+    else if (a === "english") { const d = D.docs.find(x => x.section.startsWith("English") && /status/.test(x.slug)) || D.docs.find(x => x.section.startsWith("English")); location.replace("#/doc/" + d.slug); return; }
+    else if (a === "papers") v.innerHTML = papersPage();
+    else if (a === "more") v.innerHTML = morePage();
+    else v.innerHTML = `<div class="empty">Not found. <a href="#/">Go home</a></div>`;
+  } catch (e) { console.error(e); v.innerHTML = `<div class="empty">Something went wrong rendering this page.</div>`; }
+  lazyThumbs(v);
+  bindPage();
+  if (!c || a !== "prof") window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+
+/* ================= HOME ================= */
+function actions() {
+  const out = [];
+  for (const p of D.professors) {
+    const n = sentDays(p);
+    if (p.status === "sent" && n != null && !p.followup_sent && n >= 8)
+      out.push({w: 1, icon: "send", t: `Follow up with ${p.name.replace(/^(Prof\.|Dr\.)\s*/, "")}`, s: `${shortInst(p)} · first email ${n} days ago`, h: `#/prof/${p.id}/emails`});
+  }
+  for (const p of D.professors.filter(p => p.status === "not-sent" && (PRI[p.priority] ?? 9) <= 2).sort((a, b) => PRI[a.priority] - PRI[b.priority]))
+    out.push({w: PRI[p.priority] <= 1 ? 0 : 2, icon: "mail", t: `Send first email: ${p.name.replace(/^(Prof\.|Dr\.)\s*/, "")}`, s: `${shortInst(p)} · priority ${p.priority}`, h: `#/prof/${p.id}/emails`});
+  for (const p of D.professors.filter(p => PRI[p.priority] <= 1))
+    p.checklist.filter(c => !c.done).slice(0, 3).forEach(c => out.push({w: 0, icon: "check", t: c.text, s: `${p.last} · checklist`, h: `#/prof/${p.id}`}));
+  return out.sort((a, b) => a.w - b.w);
+}
+function upcoming() {
+  const items = [];
+  for (const p of D.professors) { const n = daysTo(p.deadline_date); if (n != null && n >= 0) items.push({date: p.deadline_date, n, t: p.program.split(/[.(;]/)[0].slice(0, 70), s: `${p.name} · ${shortInst(p)}`, h: `#/prof/${p.id}`, kind: "deadline", p}); }
+  for (const e of D.events) { const n = daysTo(e.date); if (n != null && n >= 0 && e.date.length === 10) items.push({date: e.date, n, t: e.title, s: e.kind === "english" ? "English" : "Personal", h: e.professor_id ? `#/prof/${e.professor_id}` : "#/calendar", kind: e.kind}); }
+  return items.sort((a, b) => a.n - b.n || (PRI[a.p?.priority] ?? 9) - (PRI[b.p?.priority] ?? 9));
+}
+function home() {
+  const P = D.professors, up = upcoming();
+  const next = up.find(x => x.kind === "deadline");
+  const sent = P.filter(p => p.status === "sent").length;
+  const follow = actions().filter(a => a.icon === "send").length;
+  const soon = up.filter(x => x.kind === "deadline" && x.n <= 30).length;
+  const hour = new Date().getHours();
+  const hi = hour < 12 ? "Good morning" : hour < 19 ? "Good afternoon" : "Good evening";
+  const span = next ? Math.max(1, daysTo(next.date) + 30) : 1;
+  return `
+  <div class="head"><div><div class="crumb">${new Date().toLocaleDateString("en-US", {weekday: "long", month: "long", day: "numeric", year: "numeric"})}</div><h1>${hi}, ${esc(D.first)}</h1></div></div>
+  ${next ? `<div class="hero"><div class="row"><div><div class="lbl">Next deadline</div><h1>${esc(next.p.program.split(/[.(;]/)[0])}</h1>
+    <div style="opacity:.9">${esc(next.p.name)} · ${fmtD(next.date)} · <a href="${next.h}">open folder</a></div></div>
+    <div style="text-align:right"><div class="big">${next.n}</div><div style="opacity:.85">days left</div></div></div>
+    <div class="bar"><i style="width:${Math.max(4, 100 - next.n / span * 100)}%"></i></div></div>` : ""}
+  <div class="grid g4" style="margin-top:16px">
+    <div class="card kpi"><div class="v">${P.length}</div><div class="l">Professors & programs</div><div class="t">${P.filter(p => p.region === "North America").length} North America · ${P.filter(p => p.region === "Europe").length} Europe · ${P.filter(p => p.region === "Brazil").length} Brazil</div></div>
+    <div class="card kpi"><div class="v">${sent}</div><div class="l">Emails sent</div><div class="t">${P.filter(p => p.tracker_status === "replied").length} replies so far</div></div>
+    <div class="card kpi"><div class="v">${follow}</div><div class="l">Follow-ups due</div><div class="t">8+ days without reply</div></div>
+    <div class="card kpi"><div class="v">${soon}</div><div class="l">Deadlines in 30 days</div><div class="t">${up.filter(x => x.kind === "deadline").length} upcoming in total</div></div>
+  </div>
+  <div class="grid g2" style="margin-top:6px">
+    <div><div class="sec"><h2>${ic("check")}Do next</h2></div><div class="card todo">${actions().slice(0, 9).map(a => `<a href="${a.h}"><span class="dot">${ic(a.icon)}</span><span><span>${esc(a.t)}</span><div class="w">${esc(a.s)}</div></span></a>`).join("") || `<div class="empty">All clear</div>`}</div></div>
+    <div><div class="sec"><h2>${ic("cal")}Coming up</h2><a href="#/calendar" class="small">Full calendar →</a></div><div class="card dl">${up.slice(0, 8).map(x => { const d = parseD(x.date); return `<a href="${x.h}"><span class="datebox"><b>${d.getDate()}</b><span>${MON[d.getMonth()]}</span></span><span><span>${esc(x.t)}</span><div class="small muted">${esc(x.s)}</div></span>${dueChip(x.n)}</a>`; }).join("")}</div></div>
+  </div>
+  <div class="sec"><h2>${ic("star")}Top priorities</h2><a href="#/professors" class="small">All professors →</a></div>
+  <div class="grid auto">${P.filter(p => PRI[p.priority] <= 1).sort((a, b) => PRI[a.priority] - PRI[b.priority]).map(profCard).join("")}</div>
+  <div class="sec"><h2>${ic("users")}Pipeline</h2></div>
+  <div class="grid g4">${Object.entries(STATUS).map(([k, s]) => { const ps = P.filter(p => p.status === k); return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="pill t">${ic(s.icon)}${s.label}</span><b style="font-size:1.4rem;color:var(--teal-800)">${ps.length}</b></div><div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">${ps.sort((a, b) => PRI[a.priority] - PRI[b.priority]).map(p => `<a href="#/prof/${p.id}" class="small" style="display:flex;justify-content:space-between;gap:6px;color:var(--ink-2)"><span>${esc(p.name.replace(/^(Prof\.|Dr\.)\s*/, ""))}</span><span class="muted">${esc(p.priority)}</span></a>`).join("")}</div></div>`; }).join("")}</div>`;
+}
+
+/* ================= PROFESSORS ================= */
+let F = {q: "", status: "all", region: "all", sort: "priority"};
+function profCard(p) {
+  const n = daysTo(p.deadline_date), m = parseInt(p.match_pct) || 0;
+  return `<a class="card pc" href="#/prof/${p.id}">
+    <div class="tp"><div class="av">${esc(initials(p))}</div><div><div class="nm">${esc(p.name)}</div><div class="in">${esc(shortInst(p))}${p.country ? " · " + esc(p.country) : ""}</div></div></div>
+    <div class="pills">${priPill(p)}${statusPill(p)}<span class="pill ghost">${esc(TRACK[p.track] || p.track)}</span></div>
+    <div class="why">${esc(p.why)}</div>
+    <div class="ft"><span>${p.deadline_date ? `${fmtD(p.deadline_date)} ${dueChip(n)}` : `<span class="muted">${esc(p.deadline.slice(0, 34))}</span>`}</span>${m ? `<span class="muted" title="CV keyword coverage">match<span class="meter"><i style="width:${m}%"></i></span></span>` : ""}</div></a>`;
+}
+function filtered() {
+  const q = F.q.toLowerCase();
+  let ps = D.professors.filter(p =>
+    (F.status === "all" || p.status === F.status) &&
+    (F.region === "all" || p.region === F.region) &&
+    (!q || [p.name, p.institution, p.why, p.notes, p.program, p.email, TRACK[p.track]].join(" ").toLowerCase().includes(q)));
+  const by = {
+    priority: (a, b) => PRI[a.priority] - PRI[b.priority] || (daysTo(a.deadline_date) ?? 999) - (daysTo(b.deadline_date) ?? 999),
+    deadline: (a, b) => ((d => d == null || d < 0 ? 999 : d)(daysTo(a.deadline_date))) - ((d => d == null || d < 0 ? 999 : d)(daysTo(b.deadline_date))),
+    match: (a, b) => (parseInt(b.match_pct) || 0) - (parseInt(a.match_pct) || 0),
+    name: (a, b) => a.last.localeCompare(b.last),
+  };
+  return ps.sort(by[F.sort]);
+}
+function professors() {
+  const regions = ["all", "North America", "Europe", "Brazil"];
+  const chip = (k, v, l) => `<button class="chip ${F[k] === v ? "on" : ""}" data-f="${k}" data-v="${v}">${l}</button>`;
+  return `<div class="head"><div><div class="crumb">Targets</div><h1>Professors & programs</h1></div></div>
+  <div class="filters">
+    <input class="field" id="fq" placeholder="Filter by name, topic, university…" value="${esc(F.q)}" style="max-width:300px;padding:8px 12px;border-radius:99px">
+    <span class="sep"></span>${chip("status", "all", "All")}${Object.entries(STATUS).map(([k, s]) => chip("status", k, s.label)).join("")}
+    <span class="sep"></span>${regions.map(r => chip("region", r, r === "all" ? "Everywhere" : r)).join("")}
+    <span class="sep"></span><select class="chip" id="fsort">${[["priority", "Sort: priority"], ["deadline", "Sort: deadline"], ["match", "Sort: CV match"], ["name", "Sort: name"]].map(([v, l]) => `<option value="${v}" ${F.sort === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+  </div>
+  <div class="grid auto" id="plist">${filtered().map(profCard).join("") || `<div class="empty">No matches</div>`}</div>`;
+}
+
+function prof(id, tab) {
+  const p = D.professors.find(x => x.id === id);
+  if (!p) return `<div class="empty">Not found</div>`;
+  const emails = p.files.filter(f => f.kind === "txt" && /email|mensaje|note|draft/i.test(f.name));
+  const pdfs = p.files.filter(f => f.kind === "pdf" && f.name !== "venn.pdf");
+  const notes = p.files.filter(f => f.kind !== "pdf" && !emails.includes(f) && f.name !== "match_report.txt");
+  const T = [["overview", "Overview"], ["emails", `Emails (${emails.length})`], ["documents", `Documents (${pdfs.length + notes.length})`], ["venn", "Venn & keywords"], ["papers", "Their papers"]];
+  const n = daysTo(p.deadline_date);
+  const links = [...new Set((p.profile.match(/https?:\/\/[^\s·)]+/g) || []).map(u => u.replace(/[.,;]+$/, "")))];
+  let body = "";
+  if (tab === "overview") {
+    const done = p.checklist.filter(c => c.done).length;
+    body = `<div class="grid g2" style="align-items:start">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="callout"><b style="color:var(--teal-900)">Why this professor</b><div style="margin-top:6px">${esc(p.why)}</div></div>
+        <div class="card"><table class="facts">
+          ${[["Program", p.program], ["Deadline", p.deadline], ["Application fee", p.fee], ["English test", p.english], ["Letters", p.letters], ["Admission", p.admission], ["Email", p.email], p.sent_date ? ["First email", `${fmtD(p.sent_date)} · “${p.sent_subject}”`] : null].filter(Boolean).map(([k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join("")}
+        </table></div>
+        ${p.notes ? `<div class="card"><h3 style="margin-bottom:8px">Notes</h3><div class="small" style="color:var(--ink-2)">${esc(p.notes)}</div></div>` : ""}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        ${p.checklist.length ? `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3>Checklist</h3><span class="pill t">${done}/${p.checklist.length}</span></div><ul class="cl">${p.checklist.map(c => `<li class="${c.done ? "done" : ""}"><span class="bx">${c.done ? ic("check") : ""}</span><span>${esc(c.text.replace(/^DONE[^:]*:\s*/, ""))}</span></li>`).join("")}</ul></div>` : ""}
+        ${(p.key_papers || []).length ? `<div class="card"><h3 style="margin-bottom:8px">Key papers</h3><ul class="cl">${p.key_papers.map(k => `<li><span class="bx" style="border:0;color:var(--teal-700)">${ic("file")}</span><span>${esc(k)}</span></li>`).join("")}</ul></div>` : ""}
+        ${(() => { const v = p.files.find(f => f.name === "venn.pdf"); return v ? `<a class="card" href="#/prof/${p.id}/venn" style="padding:10px;display:block"><img data-sha="${v.thumb}" alt="Venn diagram" style="width:100%;border-radius:8px;opacity:0;transition:.3s" onload="this.style.opacity=1"></a>` : ""; })()}
+      </div></div>`;
+  } else if (tab === "emails") {
+    body = emails.length ? `<div class="grid" style="gap:18px;max-width:860px">${emails.map(f => {
+      const e = parseEmail(f.text);
+      const isMail = !!(e.head.to || e.head.subject);
+      const title = f.name.replace(/\.txt$/, "").replace(/_/g, " ");
+      const mailto = isMail ? `mailto:${encodeURIComponent(e.head.to || "")}?subject=${encodeURIComponent(e.head.subject || "")}&body=${encodeURIComponent(e.body)}` : "";
+      return `<div class="card mail"><div class="mh"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:6px"><h3 style="text-transform:capitalize">${esc(title)}</h3>${f.name === "email_first.txt" && p.sent_date ? `<span class="pill ok">${ic("check")}sent ${fmtD(p.sent_date)}</span>` : ""}</div>
+        ${e.head.to ? `<div class="r"><b>To</b><span>${esc(e.head.to)}</span></div>` : ""}${e.head.subject ? `<div class="r"><b>Subject</b><span>${esc(e.head.subject)}</span></div>` : ""}${e.head.attach ? `<div class="r"><b>Attach</b><span>${esc(e.head.attach)}</span></div>` : ""}</div>
+        ${e.notes ? `<div class="note">${esc(e.notes)}</div>` : ""}
+        <div class="body">${esc(isMail ? e.body : f.text)}</div>
+        <div class="acts"><button class="btn" data-copy="${esc(isMail ? e.body : f.text)}">${ic("copy")}Copy text</button>${e.head.subject ? `<button class="btn" data-copy="${esc(e.head.subject)}">${ic("copy")}Copy subject</button>` : ""}${mailto ? `<a class="btn primary" href="${mailto}">${ic("mail")}Open in mail app</a>` : ""}</div></div>`;
+    }).join("")}</div>` : `<div class="empty">No emails in this folder</div>`;
+  } else if (tab === "documents") {
+    body = `<div class="docs">${pdfs.map(docTile).join("")}${notes.map(f => `<a class="doc txt" data-note="${p.id}:${esc(f.name)}"><div class="th">${ic("file")}</div><div class="cp">${esc(f.name)}<small>${f.kind === "md" ? "note" : "text"}</small></div></a>`).join("")}</div>`;
+  } else if (tab === "venn") {
+    const rep = p.files.find(f => f.name === "match_report.txt")?.text || "";
+    const g = re => (rep.match(re)?.[1] || "").split(",").map(s => s.trim()).filter(Boolean);
+    const both = g(/INTERSECTION:\s*(.*)/), theirs = g(/GAPS:\s*(.*)/);
+    const cov = rep.match(/coverage\s+(\d+)%/)?.[1];
+    const v = p.files.find(f => f.name === "venn.pdf");
+    body = `<div class="venn" style="margin-bottom:22px">
+      <div class="c mine"><h3>Only you</h3><div class="pills">${g(/ONLY YOU:\s*(.*)/).map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div><div class="small muted" style="margin-top:10px">Your strengths they don't use much: the "extra" you bring.</div></div>
+      <div class="c both"><h3>The intersection${cov ? ` · ${cov}% of their vocabulary` : ""}</h3><div class="pills">${both.map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div><div class="small" style="margin-top:10px;opacity:.85">Use these words in the subject line and the first two sentences.</div></div>
+      <div class="c theirs"><h3>Their words you don't use yet</h3><div class="pills">${theirs.slice(0, 18).map(t => `<span class="pill t">${esc(t)}</span>`).join("")}</div></div>
+    </div>
+    ${v ? `<div class="card" style="padding:12px"><img data-sha="${v.thumb}" alt="Venn diagram" style="width:100%;border-radius:8px;opacity:0;transition:.3s" onload="this.style.opacity=1"></div>` : ""}
+    ${rep ? `<details class="card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:600">Full keyword report</summary><pre class="txt mono" style="margin-top:12px">${esc(rep)}</pre></details>` : ""}`;
+  } else if (tab === "papers") {
+    body = `<div class="grid g2"><div class="card"><h3 style="margin-bottom:8px">Key papers (summary)</h3><ul class="cl">${(p.key_papers || []).map(k => `<li><span class="bx" style="border:0;color:var(--teal-700)">${ic("file")}</span><span>${esc(k)}</span></li>`).join("") || "<li>None listed</li>"}</ul></div>
+      <div class="card"><h3 style="margin-bottom:8px">PDFs on your computer</h3><div class="small muted" style="margin-bottom:8px">Their papers stay local (copyright and size): <span class="mono">professors - papers/</span></div><ul class="cl">${(p.papers || []).map(k => `<li><span class="bx" style="border:0;color:var(--muted)">${ic("file")}</span><span class="small">${esc(k)}</span></li>`).join("") || "<li>None</li>"}</ul></div></div>`;
+  }
+  return `<div class="crumb"><a href="#/professors">Professors</a> / ${esc(p.last)}</div>
+  <div class="ph"><div class="av lg">${esc(initials(p))}</div><div class="meta"><h1>${esc(p.name)}</h1><div class="muted">${esc(p.institution)}</div>
+    <div class="pills" style="margin-top:10px">${priPill(p)}${statusPill(p)}<span class="pill ghost">CV track: ${esc(TRACK[p.track] || p.track)}</span>${p.deadline_date ? `<span class="pill">${ic("cal")}${fmtD(p.deadline_date)}</span>${dueChip(n)}` : ""}</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">${p.email && p.email.includes("@") ? `<button class="btn" data-copy="${esc(p.email.split(/[\s(]/)[0])}">${ic("mail")}${esc(p.email.split(/[\s(]/)[0])}</button>` : ""}${links.slice(0, 3).map((l, i) => { const u = new URL(l); const lab = i && links.some((m, j) => j < i && new URL(m).hostname === u.hostname) ? (u.pathname.split("/").filter(Boolean).pop() || u.hostname) : u.hostname.replace(/^www\./, ""); return `<a class="btn" href="${esc(l)}" target="_blank" rel="noopener">${ic("ext")}${esc(lab)}</a>`; }).join("")}</div></div>
+  <div class="tabs">${T.map(([k, l]) => `<a href="#/prof/${p.id}/${k}" class="${k === tab ? "on" : ""}">${l}</a>`).join("")}</div>${body}`;
+}
+function docTile(f) {
+  return `<a class="doc" data-pdf="${f.file}" data-name="${esc(f.name)}" data-thumb="${f.thumb}"><div class="th"><img data-sha="${f.thumb}" alt=""></div><div class="cp">${esc(f.title)}<small>PDF${f.pages ? ` · ${f.pages} page${f.pages > 1 ? "s" : ""}` : ""}</small></div></a>`;
+}
+
+/* ================= CALENDAR ================= */
+function calItems() {
+  const it = [];
+  for (const p of D.professors) if (p.deadline_date) it.push({date: p.deadline_date, t: `${p.program.split(/[.(;]/)[0].slice(0, 60)}`, s: `${p.name} · ${shortInst(p)}`, h: `#/prof/${p.id}`, kind: "deadline", short: p.short});
+  for (const e of D.events) it.push({date: e.date, end: e.end, t: e.title, s: {english: "English test", personal: "Personal", program: "Program"}[e.kind] || e.kind, h: e.professor_id ? `#/prof/${e.professor_id}` : "", kind: e.kind, short: e.short || e.title.split(/[:(]/)[0].slice(0, 26)});
+  return it.sort((a, b) => a.date.localeCompare(b.date));
+}
+function calendar() {
+  const it = calItems();
+  const fut = it.filter(x => (daysTo(x.end || x.date) ?? 0) >= -1 || x.date.length === 7);
+  // timeline svg
+  const start = new Date(TODAY); start.setDate(start.getDate() - 5);
+  const dated = fut.filter(x => x.date.length === 10);
+  const last = dated.length ? parseD(dated[dated.length - 1].date) : new Date(TODAY.getTime() + 90 * 864e5);
+  const end = new Date(Math.min(last.getTime() + 10 * 864e5, start.getTime() + 170 * 864e5));
+  const days = Math.round((end - start) / 864e5), PX = 9, W = Math.max(860, days * PX + 60), X = d => 30 + Math.round((d - start) / 864e5) * PX;
+  const lanes = [], placed = [];
+  for (const x of dated) {
+    const d = parseD(x.date); if (d > end) continue;
+    const x0 = X(d), x1 = x.end ? X(parseD(x.end)) : null, lx = Math.max(x0, x1 || 0) + 12, w = lx - x0 + x.short.length * 7.4 + 14;
+    let lane = 0; while ((lanes[lane] ?? -1e9) > x0 - 8) lane++;
+    lanes[lane] = x0 + w; placed.push({...x, x0, lane, x1, lx});
+  }
+  const H = 70 + Math.max(1, lanes.length) * 34 + 20;
+  let ticks = "";
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    if (d.getDate() === 1) ticks += `<line x1="${X(d)}" x2="${X(d)}" y1="24" y2="${H - 10}" stroke="#E2E8F0"/><text x="${X(d) + 6}" y="18" font-size="13" fill="#0F766E" font-weight="600">${MONL[d.getMonth()]} ${d.getFullYear()}</text>`;
+    else if (d.getDay() === 1) ticks += `<line x1="${X(d)}" x2="${X(d)}" y1="40" y2="46" stroke="#CBD5E1"/><text x="${X(d)}" y="58" font-size="10" fill="#94A3B8" text-anchor="middle">${d.getDate()}</text>`;
+  }
+  const tx = X(TODAY);
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Timeline of deadlines">
+    <line x1="20" x2="${W - 10}" y1="43" y2="43" stroke="#CBD5E1" stroke-width="1.5"/>${ticks}
+    <rect x="${tx - 1}" y="28" width="2" height="${H - 38}" fill="#0F766E"/><rect x="${tx - 22}" y="26" width="44" height="16" rx="8" fill="#0F766E"/><text x="${tx}" y="38" font-size="10" fill="#fff" text-anchor="middle" font-weight="600">today</text>
+    ${placed.map(x => { const y = 84 + x.lane * 34; const dl = x.kind === "deadline";
+      return `<a href="${x.h || "#/calendar"}"><g><title>${esc(x.t)} · ${fmtD(x.date)}</title>
+        <line x1="${x.x0}" x2="${x.x0}" y1="46" y2="${y - 7}" stroke="${dl ? "#5EEAD4" : "#CBD5E1"}" stroke-dasharray="${dl ? "0" : "3 3"}"/>
+        ${x.x1 ? `<rect x="${x.x0}" y="${y - 4}" width="${Math.max(8, x.x1 - x.x0)}" height="8" rx="4" fill="#99F6E4"/>` : ""}
+        ${dl ? `<circle cx="${x.x0}" cy="${y}" r="6.5" fill="#0F766E" stroke="#fff" stroke-width="2"/>` : `<rect x="${x.x0 - 6}" y="${y - 6}" width="12" height="12" rx="2" transform="rotate(45 ${x.x0} ${y})" fill="#fff" stroke="#334155" stroke-width="2"/>`}
+        <text x="${x.lx}" y="${y + 4}" font-size="12.5" fill="#0F172A" stroke="#fff" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${esc(x.short)}</text></g></a>`; }).join("")}
+  </svg>`;
+  // month list
+  const months = {};
+  for (const x of fut) { const k = x.date.slice(0, 7); (months[k] ||= []).push(x); }
+  const list = Object.entries(months).sort().map(([k, xs]) => { const [y, m] = k.split("-").map(Number);
+    return `<div class="month"><h3>${MONL[m - 1]} ${y}</h3><div class="card dl">${xs.map(x => { const d = parseD(x.date), n = daysTo(x.date);
+      return `<a href="${x.h || "#/calendar"}"><span class="datebox"><b>${x.date.length === 10 ? d.getDate() : "?"}</b><span>${MON[d.getMonth()]}</span></span><span><span>${esc(x.t)}${x.end ? ` <span class="muted small">→ ${fmtD(x.end)}</span>` : ""}</span><div class="small muted">${x.kind === "deadline" ? "Application deadline · " : ""}${esc(x.s)}</div></span>${x.date.length === 10 ? dueChip(n) : `<span class="pill ghost">date TBC</span>`}</a>`; }).join("")}</div></div>`; }).join("");
+  const undated = D.professors.filter(p => !p.deadline_date);
+  return `<div class="head"><div><div class="crumb">Plan</div><h1>Calendar</h1></div><a class="btn" href="#/doc/${D.docs.find(d => /timeline/.test(d.slug))?.slug}">${ic("book")}Week-by-week plan</a></div>
+  <div class="tl">${svg}</div>
+  <div class="legend"><span><svg width="14" height="14"><circle cx="7" cy="7" r="5.5" fill="#0F766E"/></svg>Application deadline</span><span><svg width="14" height="14"><rect x="3" y="3" width="8" height="8" transform="rotate(45 7 7)" fill="#fff" stroke="#334155" stroke-width="2"/></svg>Personal, English or program event</span><span><svg width="22" height="10"><rect y="1" width="22" height="8" rx="4" fill="#99F6E4"/></svg>Window</span></div>
+  ${list}
+  ${undated.length ? `<div class="month"><h3>No fixed date yet</h3><div class="card dl">${undated.map(p => `<a href="#/prof/${p.id}"><span class="datebox"><b>–</b><span>TBC</span></span><span><span>${esc(p.name)} · ${esc(shortInst(p))}</span><div class="small muted">${esc(p.deadline)}</div></span><span></span></a>`).join("")}</div></div>` : ""}`;
+}
+
+/* ================= MAP ================= */
+function mapPage() {
+  const groups = {};
+  for (const p of D.professors) if (p.lat != null) (groups[p.inst] ||= []).push(p);
+  const byRegion = {};
+  for (const p of D.professors) (byRegion[p.region || "Other"] ||= []).push(p);
+  return `<div class="head"><div><div class="crumb">Where</div><h1>Map</h1></div><div class="pills">${Object.entries(byRegion).map(([r, ps]) => `<span class="pill t">${esc(r)} · ${ps.length}</span>`).join("")}</div></div>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) 260px;align-items:start" id="mapgrid"><div id="map"></div>
+  <div class="card maplist" style="padding:10px;max-height:calc(100vh - 210px);overflow:auto">${Object.entries(groups).sort((a, b) => b[1].length - a[1].length).map(([k, ps]) => `<a href="#/map" data-fly="${k}"><span>${esc(shortInst(ps[0]))}</span><span class="pill t">${ps.length}</span></a>`).join("")}</div></div>`;
+}
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const l = document.createElement("link"); l.rel = "stylesheet"; l.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"; document.head.appendChild(l);
+    const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"; s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+}
+async function drawMap() {
+  if (innerWidth < 900) $("#mapgrid").style.gridTemplateColumns = "1fr";
+  await loadLeaflet();
+  const map = L.map("map", {scrollWheelZoom: true, worldCopyJump: true});
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 18, referrerPolicy: "strict-origin-when-cross-origin"}).addTo(map);
+  const groups = {};
+  for (const p of D.professors) if (p.lat != null) (groups[p.inst] ||= []).push(p);
+  const pts = [], mk = {};
+  for (const [k, ps] of Object.entries(groups)) {
+    const p0 = ps[0], top = ps.some(p => PRI[p.priority] <= 1);
+    const m = L.circleMarker([p0.lat, p0.lon], {radius: 8 + ps.length * 2.5, color: "#fff", weight: 2.5, fillColor: top ? "#0F766E" : "#14B8A6", fillOpacity: .92}).addTo(map);
+    m.bindTooltip(`${shortInst(p0)} · ${ps.length}`, {direction: "top", offset: [0, -8]});
+    m.bindPopup(`<b>${esc(shortInst(p0))}</b><div style="color:#64748B;font-size:.8rem;margin-bottom:6px">${esc(p0.country)}</div>${ps.map(p => `<a href="#/prof/${p.id}">${esc(p.name)} <span style="color:#64748B">· ${esc(STATUS[p.status]?.label || "")}</span></a>`).join("")}`);
+    pts.push([p0.lat, p0.lon]); mk[k] = m;
+  }
+  map.fitBounds(pts, {padding: [30, 30]});
+  $$("[data-fly]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); const m = mk[a.dataset.fly]; map.flyTo(m.getLatLng(), 9, {duration: .8}); setTimeout(() => m.openPopup(), 850); }));
+}
+
+/* ================= CV ================= */
+let CVT = "ECO", CV1 = false;
+function cvPage() {
+  const cv = D.cvs.find(c => c.track === CVT && c.one_page === CV1) || D.cvs[0];
+  const users = D.professors.filter(p => p.track.toUpperCase() === CVT);
+  return `<div class="head"><div><div class="crumb">Documents</div><h1>Curriculum Vitae</h1></div></div>
+  <div class="filters"><div class="seg">${Object.keys(D.tracks).map(t => `<button data-cvt="${t}" class="${t === CVT ? "on" : ""}">${t}</button>`).join("")}</div>
+  <div class="seg"><button data-cv1="0" class="${!CV1 ? "on" : ""}">2 pages</button><button data-cv1="1" class="${CV1 ? "on" : ""}">1 page</button></div></div>
+  <div class="cvwrap"><a class="cvprev" data-pdf="${cv.file}" data-name="${esc(cv.name)}" style="cursor:zoom-in"><img data-sha="${cv.thumb}" alt="CV preview" style="opacity:0;transition:.3s" onload="this.style.opacity=1"></a>
+  <div style="display:flex;flex-direction:column;gap:16px"><div class="card"><div class="small muted">Track ${esc(CVT)}</div><h3 style="margin:4px 0 10px">${esc(D.tracks[CVT])}</h3>
+    <div style="display:flex;flex-direction:column;gap:8px"><button class="btn primary" data-pdf="${cv.file}" data-name="${esc(cv.name)}">${ic("ext")}Open full PDF</button><button class="btn" data-dl="${cv.file}" data-name="${esc(cv.name)}">${ic("down")}Download</button></div>
+    <div class="small muted" style="margin-top:10px">${esc(cv.name)} · ${cv.pages} page${cv.pages > 1 ? "s" : ""}</div></div>
+    <div class="card"><h3 style="margin-bottom:8px">Used for</h3>${users.map(p => `<a href="#/prof/${p.id}" class="small" style="display:block;padding:4px 0">${esc(p.name)} · <span class="muted">${esc(shortInst(p))}</span></a>`).join("") || `<div class="small muted">No professor uses this track yet</div>`}</div>
+    <div class="card small muted">Source: <span class="mono">02_cv/cv.tex</span>. Ask Claude for changes and every version is rebuilt.</div></div></div>`;
+}
+
+/* ================= DOCS ================= */
+function docPage(slug) {
+  const d = D.docs.find(x => x.slug === slug) || D.docs[0];
+  const secs = {};
+  for (const x of D.docs) (secs[x.section] ||= []).push(x);
+  return `<div class="doclayout"><aside class="doclist card" style="padding:8px">${Object.entries(secs).map(([s, xs]) => `<h4>${esc(s)}</h4>${xs.map(x => `<a href="#/doc/${x.slug}" class="${x.slug === d.slug ? "on" : ""}">${esc(x.title)}</a>`).join("")}`).join("")}</aside>
+  <article><div class="crumb">${esc(d.section)}${d.path ? ` · <span class="mono">${esc(d.path)}</span>` : ""}</div><div class="md">${md(d.text)}</div></article></div>`;
+}
+function papersPage() {
+  return `<div class="head"><div><div class="crumb">Your work</div><h1>My papers</h1></div></div><div class="docs" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${D.mine.map(docTile).join("")}</div>`;
+}
+function morePage() {
+  return `<div class="head"><h1>More</h1></div><div class="card todo">${NAV.filter(n => !TABS.includes(n.r)).map(n => `<a href="#/${n.r}"><span class="dot">${ic(n.i)}</span><span style="align-self:center">${n.t}</span></a>`).join("")}<a href="#" id="lock2"><span class="dot">${ic("out")}</span><span style="align-self:center">Lock this device</span></a></div><p class="small muted" style="margin-top:16px">Updated ${esc(D.generated.replace("T", " "))}</p>`;
+}
+
+/* ================= interactions ================= */
+async function showPdf(sha, name) {
+  $("#mtitle").textContent = name; $("#macts").innerHTML = ""; $("#mbody").innerHTML = `<div class="spin"></div>`;
+  $("#modal").classList.add("on"); document.body.style.overflow = "hidden";
+  try {
+    const url = await fileURL(sha);
+    $("#macts").innerHTML = `<a class="btn" href="${url}" target="_blank" rel="noopener">${ic("ext")}<span class="hide-s">New tab</span></a><a class="btn" href="${url}" download="${esc(name)}">${ic("down")}</a>`;
+    const mobile = innerWidth < 900 || /iPhone|iPad|Android/i.test(navigator.userAgent);
+    if (mobile) {
+      const tile = $(`[data-pdf="${sha}"][data-thumb]`); const th = tile?.dataset.thumb;
+      $("#mbody").innerHTML = `<div class="pad" style="text-align:center">${th ? `<img id="mth" style="max-width:100%;border-radius:10px;box-shadow:var(--shadow)">` : ""}<p><a class="btn primary" href="${url}" target="_blank" rel="noopener">${ic("ext")}Open PDF</a></p></div>`;
+      if (th) $("#mth").src = await fileURL(th);
+    } else $("#mbody").innerHTML = `<iframe src="${url}#view=FitH" title="${esc(name)}"></iframe>`;
+  } catch { $("#mbody").innerHTML = `<div class="empty">Couldn't open this file.</div>`; }
+}
+function showNote(title, text, kind) {
+  $("#mtitle").textContent = title; $("#macts").innerHTML = `<button class="btn" id="mcopy">${ic("copy")}Copy</button>`;
+  $("#mbody").innerHTML = `<div class="pad" style="background:#fff;min-height:100%">${kind === "md" ? `<div class="md">${md(text)}</div>` : `<pre class="txt">${esc(text)}</pre>`}</div>`;
+  $("#mcopy").onclick = () => copy(text);
+  $("#modal").classList.add("on"); document.body.style.overflow = "hidden";
+}
+function closeModal() { $("#modal").classList.remove("on"); $("#mbody").innerHTML = ""; document.body.style.overflow = ""; }
+$("#mclose").onclick = closeModal;
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+
+function bindPage() {
+  const v = $("#view");
+  $$("[data-pdf]", v).forEach(a => a.addEventListener("click", e => { e.preventDefault(); showPdf(a.dataset.pdf, a.dataset.name); }));
+  $$("[data-dl]", v).forEach(a => a.addEventListener("click", async e => { const u = await fileURL(a.dataset.dl); const x = document.createElement("a"); x.href = u; x.download = a.dataset.name; x.click(); }));
+  $$("[data-copy]", v).forEach(b => b.addEventListener("click", () => copy(b.dataset.copy)));
+  $$("[data-note]", v).forEach(a => a.addEventListener("click", () => { const [id, name] = a.dataset.note.split(/:(.*)/s); const f = D.professors.find(p => p.id === +id).files.find(x => x.name === name); showNote(f.name, f.text, f.kind); }));
+  $$("[data-f]", v).forEach(b => b.addEventListener("click", () => { F[b.dataset.f] = b.dataset.v; route(); }));
+  const fs = $("#fsort", v); if (fs) fs.onchange = () => { F.sort = fs.value; route(); };
+  const fq = $("#fq", v); if (fq) fq.addEventListener("input", () => { F.q = fq.value; $("#plist").innerHTML = filtered().map(profCard).join("") || `<div class="empty">No matches</div>`; });
+  $$("[data-cvt]", v).forEach(b => b.addEventListener("click", () => { CVT = b.dataset.cvt; route(); }));
+  $$("[data-cv1]", v).forEach(b => b.addEventListener("click", () => { CV1 = b.dataset.cv1 === "1"; route(); }));
+  const l2 = $("#lock2", v); if (l2) l2.onclick = e => { e.preventDefault(); lock(); };
+}
+
+/* ================= search ================= */
+let IDX = [];
+function buildIndex() {
+  IDX = [];
+  for (const p of D.professors) {
+    IDX.push({k: "Professor", t: p.name + " · " + shortInst(p), h: `#/prof/${p.id}`, x: [p.name, p.institution, p.why, p.notes, p.program, p.email, p.deadline].join(" \n ")});
+    for (const f of p.files) if (f.text && f.name !== "match_report.txt") IDX.push({k: /email/.test(f.name) ? "Email" : "Note", t: `${p.last}: ${f.name}`, h: `#/prof/${p.id}/${/email|mensaje|note|draft/i.test(f.name) && f.kind === "txt" ? "emails" : "documents"}`, x: f.text});
+    for (const f of p.files) if (f.kind === "pdf") IDX.push({k: "PDF", t: `${p.last}: ${f.title}`, h: `#/prof/${p.id}/documents`, x: f.name});
+  }
+  for (const d of D.docs) IDX.push({k: d.section, t: d.title, h: `#/doc/${d.slug}`, x: d.text});
+  for (const c of D.cvs) IDX.push({k: "CV", t: c.title, h: `#/cv`, x: c.label});
+  for (const e of D.events) IDX.push({k: "Event", t: e.title, h: "#/calendar", x: e.date});
+}
+let SEL = 0;
+function doSearch(q) {
+  const box = $("#results"); q = q.trim().toLowerCase();
+  if (q.length < 2) return closeResults();
+  const words = q.split(/\s+/);
+  const hits = IDX.map(it => {
+    const T = it.t.toLowerCase(), X = it.x.toLowerCase();
+    if (!words.every(w => T.includes(w) || X.includes(w))) return null;
+    const score = words.reduce((s, w) => s + (T.includes(w) ? 10 : 0) + (X.split(w).length - 1), 0);
+    const i = X.indexOf(words[0]); const snip = i >= 0 ? it.x.slice(Math.max(0, i - 40), i + 90).replace(/\s+/g, " ") : "";
+    return {...it, score, snip};
+  }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 12);
+  const hl = s => { let h = esc(s); for (const w of words) h = h.replace(new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"), "<mark>$1</mark>"); return h; };
+  box.innerHTML = hits.length ? hits.map((h, i) => `<a href="${h.h}" class="${i === SEL ? "sel" : ""}"><span class="k">${esc(h.k)}</span><div>${hl(h.t)}</div>${h.snip ? `<span class="s">…${hl(h.snip)}…</span>` : ""}</a>`).join("") : `<div class="empty small">Nothing found for “${esc(q)}”</div>`;
+  box.style.display = "block";
+}
+function closeResults() { $("#results").style.display = "none"; SEL = 0; }
+$("#q").addEventListener("input", e => { SEL = 0; doSearch(e.target.value); });
+$("#q").addEventListener("keydown", e => {
+  const as = $$("#results a");
+  if (e.key === "ArrowDown") { SEL = Math.min(as.length - 1, SEL + 1); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { SEL = Math.max(0, SEL - 1); e.preventDefault(); }
+  else if (e.key === "Enter" && as[SEL]) { location.hash = as[SEL].getAttribute("href"); e.target.value = ""; e.target.blur(); return; }
+  else if (e.key === "Escape") { closeResults(); e.target.blur(); return; } else return;
+  as.forEach((a, i) => a.classList.toggle("sel", i === SEL));
+});
+$("#results").addEventListener("click", () => { $("#q").value = ""; closeResults(); });
+document.addEventListener("click", e => { if (!e.target.closest(".search")) closeResults(); });
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#q").focus(); $("#q").select(); }
+  if (e.key === "Escape" && $("#modal").classList.contains("on")) closeModal();
+});
+
+/* ================= boot ================= */
+function boot() {
+  $("#login").style.display = "none"; $("#app").style.display = "block";
+  $("#updated").textContent = "Updated " + D.generated.replace("T", " ").slice(0, 16);
+  $("#bname").textContent = D.brand; $("#bsub").textContent = D.subtitle; $("#blogo").textContent = $("#mlogo").textContent = D.first[0];
+  document.title = D.brand;
+  buildIndex();
+  const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"; s.onload = () => { if (location.hash.startsWith("#/doc")) route(); }; document.head.appendChild(s);
+  route();
+}
+start();
+</script>
+</body>
+</html>
