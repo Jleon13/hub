@@ -6,6 +6,12 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0F766E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Hub">
 <title>Hub</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F766E'/%3E%3Cpath d='M9 22V10h3.2l3.8 7 3.8-7H23v12h-2.8v-7.4L16.9 21h-1.8l-3.3-6.4V22z' fill='white'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -276,7 +282,7 @@ pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--in
 @media (max-width:900px){
   .side{display:none}
   main{margin-left:0}
-  .top{padding:10px 16px}
+  .top{padding:calc(10px + env(safe-area-inset-top)) 16px 10px}
   .top .mtitle{display:flex;align-items:center;gap:8px}
   .top .mtitle .logo{width:30px;height:30px;border-radius:9px;font-size:.85rem}
   .search kbd{display:none}
@@ -366,7 +372,7 @@ pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--in
 
 <script>
 "use strict";
-const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/9e567abb4521e7e74336.bin","v":1};
+const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/1bb7522469b67d3a7db1.bin","v":1};
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -903,6 +909,7 @@ function boot() {
   route();
 }
 start();
+if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
 </html>
