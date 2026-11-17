@@ -372,7 +372,7 @@ pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--in
 
 <script>
 "use strict";
-const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/602d3ebaed2d2f4a2670.bin","v":1};
+const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/5edcfed0fb01180502be.bin","v":1};
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -451,6 +451,7 @@ const MONL = ["January","February","March","April","May","June","July","August",
 const fmtD = s => { const d = parseD(s); return d ? `${MON[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}` : ""; };
 const initials = p => { const w = p.name.replace(/\(.*?\)/g, "").replace(/^(Prof\.|Dr\.)\s*/, "").replace(/\b(van|de|da|del)\b/gi, "").trim().split(/\s+/).filter(x => /^[A-Z]/.test(x) && !x.endsWith(".")); return ((w[0] || "")[0] + ((w.length > 1 ? w[w.length - 1] : "")[0] || "")) || p.last.slice(0, 2); };
 const STATUS = {
+  "replied": {label: "Replied", icon: "check"},
   "sent": {label: "Emailed · waiting", icon: "send"},
   "not-sent": {label: "To contact", icon: "mail"},
   "advice": {label: "Advice contact", icon: "chat"},
@@ -561,7 +562,7 @@ function upcoming() {
 function home() {
   const P = D.professors, up = upcoming();
   const next = up.find(x => x.kind === "deadline");
-  const sent = P.filter(p => p.status === "sent").length;
+  const sent = P.filter(p => p.status === "sent" || p.status === "replied").length;
   const follow = actions().filter(a => a.icon === "send").length;
   const soon = up.filter(x => x.kind === "deadline" && x.n <= 30).length;
   const hour = new Date().getHours();
@@ -575,7 +576,7 @@ function home() {
     <div class="bar"><i style="width:${Math.max(4, 100 - next.n / span * 100)}%"></i></div></div>` : ""}
   <div class="grid g4" style="margin-top:16px">
     <div class="card kpi"><div class="v">${P.length}</div><div class="l">Professors & programs</div><div class="t">${P.filter(p => p.region === "North America").length} North America · ${P.filter(p => p.region === "Europe").length} Europe · ${P.filter(p => p.region === "Brazil").length} Brazil</div></div>
-    <div class="card kpi"><div class="v">${sent}</div><div class="l">Emails sent</div><div class="t">${P.filter(p => p.tracker_status === "replied").length} replies so far</div></div>
+    <div class="card kpi"><div class="v">${sent}</div><div class="l">Emails sent</div><div class="t">${P.filter(p => p.status === "replied" || p.tracker_status === "replied").length} replies so far</div></div>
     <div class="card kpi"><div class="v">${follow}</div><div class="l">Follow-ups due</div><div class="t">8+ days without reply</div></div>
     <div class="card kpi"><div class="v">${soon}</div><div class="l">Deadlines in 30 days</div><div class="t">${up.filter(x => x.kind === "deadline").length} upcoming in total</div></div>
   </div>
@@ -640,6 +641,7 @@ function prof(id, tab) {
     const done = p.checklist.filter(c => c.done).length;
     body = `<div class="grid g2" style="align-items:start">
       <div style="display:flex;flex-direction:column;gap:16px">
+        ${p.status === "replied" ? `<div class="callout" style="border-color:var(--ok);background:var(--ok-bg)"><b style="color:var(--ok)">${ic("check")} Replied ${fmtD(p.reply_date)}</b><div style="margin-top:6px">${esc(p.reply_summary)}</div></div>` : ""}
         <div class="callout"><b style="color:var(--teal-900)">Why this professor</b><div style="margin-top:6px">${esc(p.why)}</div></div>
         <div class="card"><table class="facts">
           ${[["Program", p.program], ["Deadline", p.deadline], ["Application fee", p.fee], ["English test", p.english], ["Letters", p.letters], ["Admission", p.admission], ["Email", p.email], p.sent_date ? ["First email", `${fmtD(p.sent_date)} · “${p.sent_subject}”`] : null].filter(Boolean).map(([k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join("")}
