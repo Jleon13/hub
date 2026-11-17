@@ -372,7 +372,7 @@ pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--in
 
 <script>
 "use strict";
-const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/5edcfed0fb01180502be.bin","v":1};
+const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/ce70164656ce1f8eaa4a.bin","v":1};
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -458,7 +458,7 @@ const STATUS = {
   "program": {label: "Apply via program", icon: "flag"},
 };
 const PRI = {"A++": 0, "A+": 1, "A": 2, "B": 3, "C": 4};
-const TRACK = {rt: "Radiative transfer", ghg: "GHG & methane", bio: "Biomedical", ci: "Computational imaging", eco: "CV for environment"};
+const TRACK = {rt: "Radiative transfer", ghg: "GHG & methane", bio: "Biomedical", ci: "Computational imaging", eco: "CV for environment", wx: "AI weather & climate"};
 const shortInst = p => p.institution.split(/[,(:]/)[0].trim();
 function dueChip(n) {
   if (n == null) return "";
