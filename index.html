@@ -372,7 +372,7 @@ pre.txt{white-space:pre-wrap;font-family:inherit;font-size:.93rem;color:var(--in
 
 <script>
 "use strict";
-const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/668de52523e3d035556e.bin","v":1};
+const CONF = {"salt":"BxeVNWzHdrtywsFoaag7Og==","iter":600000,"data":"d/data.bin","v":2};
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -392,9 +392,10 @@ async function unseal(buf) {
   return crypto.subtle.decrypt({name: "AES-GCM", iv: u.slice(0, 12)}, KEY, u.slice(12));
 }
 async function loadData() {
-  const r = await fetch(CONF.data, {cache: "no-cache"});
-  if (!r.ok) throw new Error("fetch");
-  const plain = await unseal(await r.arrayBuffer());
+  const r = await fetch(CONF.data + "?t=" + Date.now(), {cache: "no-store"});
+  if (!r.ok) throw Object.assign(new Error("fetch"), {net: true});
+  let plain;
+  try { plain = await unseal(await r.arrayBuffer()); } catch (e) { throw Object.assign(new Error("key"), {key: true}); }
   const text = await new Response(new Blob([plain]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
   return JSON.parse(text);
 }
@@ -435,7 +436,7 @@ $("#lform").addEventListener("submit", async e => {
     }
     boot();
   } catch (err) {
-    $("#err").textContent = "That password didn't work. Try again.";
+    $("#err").textContent = err.key ? "That password didn't work. Try again." : "Couldn't load the data (connection or an update in progress). Reload the page and try again.";
     btn.disabled = false; btn.textContent = "Unlock";
   }
 });

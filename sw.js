@@ -1,5 +1,5 @@
 // Service worker: makes the site installable and usable offline. Everything it caches is still encrypted.
-const V = "668de52523e3d035556e";                 // changes on every publish, so phones pick up the new version
+const V = "8a5ded49041e0a10ca0a";                 // changes on every publish, so phones pick up the new version
 const SHELL = "hub-shell-" + V;        // index.html, manifest, icons, current data blob
 const FILES = "hub-files";             // encrypted PDFs/previews: ids never change, so keep across versions
 const LIBS = "hub-libs";               // fonts and libraries from CDNs
@@ -16,7 +16,8 @@ const networkFirst = async (req, cacheName) => {
   const c = await caches.open(cacheName);
   try {
     const r = await fetch(req, {cache: "no-cache"});
-    if (r.ok) c.put(req, r.clone());
+    const u = new URL(req.url); u.search = "";
+    if (r.ok) c.put(u.href, r.clone());   // store without the ?t= cache-buster so offline still finds it
     return r;
   } catch {
     return (await c.match(req, {ignoreSearch: true})) || Response.error();
