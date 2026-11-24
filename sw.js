@@ -1,5 +1,5 @@
 // Service worker: makes the site installable and usable offline. Everything it caches is still encrypted.
-const V = "1087c0965c482ae9b6e6";                 // changes on every publish, so phones pick up the new version
+const V = "32dcb3e03a53494d43a9";                 // changes on every publish, so phones pick up the new version
 const SHELL = "hub-shell-" + V;        // index.html, manifest, icons, current data blob
 const FILES = "hub-files";             // encrypted PDFs/previews: ids never change, so keep across versions
 const LIBS = "hub-libs";               // fonts and libraries from CDNs
